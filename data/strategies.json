@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-19T16:38:06+00:00",
+  "generated_at": "2026-05-19T17:47:01+00:00",
   "strategies": [
     {
       "id": "hyle-alpha-1",
@@ -13,7 +13,7 @@
         "multi-factor"
       ],
       "rebalance": "weekly",
-      "last_updated": "2026-05-19_123742"
+      "last_updated": "2026-05-19_134552"
     }
   ]
 }
