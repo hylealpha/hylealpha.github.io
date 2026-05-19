@@ -23,6 +23,22 @@ const Fmt = {
     if (!s) return "—";
     return s.split(" ")[0].split("T")[0];
   },
+  // Cumulative-return formatter that switches from "+x.x%" to multiplier (e.g.
+  // "10,568×") when the percentage gets too long to fit a metric card.
+  totalReturn(x) {
+    if (x == null || Number.isNaN(x)) return "—";
+    if (Math.abs(x) >= 10) {
+      // ≥1000% — show multiplier (1 + r) for readability
+      const mult = 1 + x;
+      const digits = Math.abs(mult) >= 100 ? 0 : 1;
+      return `${mult.toLocaleString("en-US", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })}×`;
+    }
+    const sign = x > 0 ? "+" : "";
+    return `${sign}${(x * 100).toFixed(1)}%`;
+  },
 };
 
 // Pick a CSS class for a numeric cell based on sign.

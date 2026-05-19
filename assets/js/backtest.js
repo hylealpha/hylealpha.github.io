@@ -43,7 +43,7 @@ function render({ meta, summary, nav, holdings, host }) {
     </div>
 
     <div class="metric-row">
-      ${metricCard("Total Return", Fmt.pct(h.total_return, 1), signClass(h.total_return))}
+      ${metricCard("Total Return", Fmt.totalReturn(h.total_return), signClass(h.total_return))}
       ${metricCard("CAGR", Fmt.pct(h.cagr, 1), signClass(h.cagr))}
       ${metricCard("Sharpe", Fmt.num(h.sharpe), "")}
       ${metricCard("Sortino", Fmt.num(h.sortino), "")}
