@@ -26,7 +26,7 @@
       "total_return": 0.0,
       "ann_return": 0.0,
       "ann_vol": 0.0,
-      "sharpe": NaN,
+      "sharpe": null,
       "max_dd": 0.0
     },
     {
