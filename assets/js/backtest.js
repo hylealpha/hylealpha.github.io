@@ -1,30 +1,28 @@
+// Detailed backtest page — single-strategy edition.
+// Pulls everything for STRATEGY_ID and renders NAV / yearly / drawdown / α-β / top DDs.
+// The holdings table is intentionally NOT shown here — it lives on the homepage.
+
+const STRATEGY_ID = "hyle-alpha-1";
+
 (async function () {
   const host = document.getElementById("strategy-content");
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-  if (!id) {
-    showError(host, new Error("Missing ?id= parameter"));
-    return;
-  }
-
   try {
-    const [meta, summary, navText, holdings] = await Promise.all([
-      fetchJSON(`data/${id}/meta.json`),
-      fetchJSON(`data/${id}/summary.json`),
-      fetchText(`data/${id}/nav.csv`),
-      fetchJSONL(`data/${id}/holdings.jsonl`).catch(() => []),
+    const [meta, summary, navText] = await Promise.all([
+      fetchJSON(`data/${STRATEGY_ID}/meta.json`),
+      fetchJSON(`data/${STRATEGY_ID}/summary.json`),
+      fetchText(`data/${STRATEGY_ID}/nav.csv`),
     ]);
-    document.title = `${meta.name} — Hyle Alpha`;
+    document.title = `Backtest — ${meta.name}`;
     document.getElementById("last-updated").textContent = Fmt.date(meta.last_updated);
 
     const nav = parseCSV(navText);
-    render({ meta, summary, nav, holdings, host });
+    render({ meta, summary, nav, host });
   } catch (err) {
     showError(host, err);
   }
 })();
 
-function render({ meta, summary, nav, holdings, host }) {
+function render({ meta, summary, nav, host }) {
   const h = summary.headline || {};
   const spec = summary.spec || {};
   const ab = summary.alpha_beta || {};
@@ -32,7 +30,7 @@ function render({ meta, summary, nav, holdings, host }) {
   host.innerHTML = `
     <div class="strategy-head">
       <div class="family-label">${meta.family || ""}</div>
-      <h1>${meta.name}</h1>
+      <h1>${meta.name} — Backtest</h1>
       <p class="description">${meta.description || ""}</p>
       <div class="meta-row">
         <span><strong>${spec.rebalance || "—"}</strong> rebalance</span>
@@ -86,32 +84,11 @@ function render({ meta, summary, nav, holdings, host }) {
         ${renderTopDrawdowns(summary.top_drawdowns || [])}
       </div>
     </div>
-
-    ${summary.comparisons && summary.comparisons.length ? `
-    <div class="panel">
-      <div class="panel-head"><h2>Component Comparison</h2></div>
-      ${renderComparisons(meta, summary)}
-    </div>` : ""}
-
-    <div class="panel">
-      <div class="panel-head">
-        <h2>Holdings — Weekly</h2>
-        <div class="controls" id="holdings-controls"></div>
-      </div>
-      <div id="holdings-body">
-        ${holdings.length ? "" : '<div class="loading">No holdings data published for this run.</div>'}
-      </div>
-    </div>
   `;
 
-  // Plot the NAV chart with all available series.
   drawNavChart(nav, meta);
   drawYearlyChart(summary.yearly || []);
   drawDrawdownChart(nav, meta);
-
-  if (holdings.length) {
-    initHoldings(holdings, meta);
-  }
 }
 
 function metricCard(label, value, cls) {
@@ -121,7 +98,6 @@ function metricCard(label, value, cls) {
 function drawNavChart(nav, meta) {
   const dates = nav.rows.map((r) => r.date);
   const seriesCols = nav.header.slice(1);
-  // Main strategy is the first non-date column.
   const traces = seriesCols.map((col, i) => ({
     x: dates,
     y: nav.rows.map((r) => parseFloat(r[col])),
@@ -171,7 +147,6 @@ function drawYearlyChart(yearly) {
 
 function drawDrawdownChart(nav, meta) {
   const dates = nav.rows.map((r) => r.date);
-  // Main strategy (first non-date column) only.
   const mainCol = nav.header[1];
   const series = nav.rows.map((r) => parseFloat(r[mainCol]));
   let running = -Infinity;
@@ -228,114 +203,6 @@ function renderTopDrawdowns(dds) {
           </tr>
         `).join("")}
       </tbody>
-    </table>
-  `;
-}
-
-function renderComparisons(meta, summary) {
-  // Always lead with the main strategy itself for context, then comparisons.
-  const rows = [
-    { name: meta.name, summary: summary.headline, alpha_beta: summary.alpha_beta },
-    ...summary.comparisons,
-  ];
-  return `
-    <table>
-      <thead>
-        <tr>
-          <th>Variant</th>
-          <th>Total</th>
-          <th>CAGR</th>
-          <th>Vol</th>
-          <th>Sharpe</th>
-          <th>Max DD</th>
-          <th>α (ann)</th>
-          <th>β</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows.map((r) => {
-          const s = r.summary || {};
-          const a = r.alpha_beta || {};
-          return `
-          <tr>
-            <td>${r.name}</td>
-            <td class="${signClass(s.total_return)}">${Fmt.pct(s.total_return)}</td>
-            <td class="${signClass(s.cagr)}">${Fmt.pct(s.cagr)}</td>
-            <td>${Fmt.pctPlain(s.ann_vol)}</td>
-            <td>${Fmt.num(s.sharpe)}</td>
-            <td class="${signClass(s.max_dd)}">${Fmt.pct(s.max_dd)}</td>
-            <td class="${signClass(a.alpha_annual)}">${Fmt.pct(a.alpha_annual)}</td>
-            <td>${Fmt.num(a.beta)}</td>
-          </tr>`;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-// ---------- Holdings ----------
-
-function initHoldings(holdings, meta) {
-  const controls = document.getElementById("holdings-controls");
-  const body = document.getElementById("holdings-body");
-
-  // Default to most recent rebalance.
-  let cursor = holdings.length - 1;
-
-  controls.innerHTML = `
-    <button id="hold-prev">←</button>
-    <select id="hold-jump" class="date-jump"></select>
-    <button id="hold-next">→</button>
-  `;
-  const select = controls.querySelector("#hold-jump");
-  select.innerHTML = holdings.map((h, i) =>
-    `<option value="${i}">${h.date}</option>`
-  ).join("");
-
-  function show(idx) {
-    cursor = Math.max(0, Math.min(holdings.length - 1, idx));
-    select.value = String(cursor);
-    body.innerHTML = renderHoldingsSnapshot(holdings[cursor], meta);
-  }
-
-  controls.querySelector("#hold-prev").addEventListener("click", () => show(cursor - 1));
-  controls.querySelector("#hold-next").addEventListener("click", () => show(cursor + 1));
-  select.addEventListener("change", () => show(parseInt(select.value, 10)));
-
-  show(cursor);
-}
-
-function renderHoldingsSnapshot(snap, meta) {
-  const positions = snap.positions || [];
-  const periodRet = snap.period_return;
-  const showSleeves = positions.some((p) => Array.isArray(p.sleeves) && p.sleeves.length);
-
-  const rows = positions.map((p) => `
-    <tr>
-      <td>${p.ticker}</td>
-      <td>${Fmt.pctPlain(p.weight, 2)}</td>
-      ${showSleeves ? `<td>${(p.sleeves || []).join(", ")}</td>` : ""}
-    </tr>
-  `).join("");
-
-  return `
-    <div class="holdings-meta">
-      <div class="item"><span class="label">Rebalance</span>${snap.date}</div>
-      <div class="item"><span class="label">Positions</span>${snap.n_positions ?? positions.length}</div>
-      <div class="item"><span class="label">Gross Weight</span>${Fmt.pctPlain(snap.total_weight, 1)}</div>
-      <div class="item"><span class="label">Period Return</span>
-        <span class="${signClass(periodRet)}">${periodRet == null ? "in progress" : Fmt.pct(periodRet, 2)}</span>
-      </div>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Ticker</th>
-          <th>Weight</th>
-          ${showSleeves ? "<th>Source</th>" : ""}
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
     </table>
   `;
 }

@@ -388,3 +388,94 @@ td.neg { color: var(--neg); }
   font-family: var(--mono);
   font-size: 13px;
 }
+
+/* ===== Single-strategy homepage ===== */
+
+/* Hero — family label above the strategy name */
+.hero .family-label {
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.hero-metrics {
+  margin-top: 28px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 720px;
+}
+@media (max-width: 700px) {
+  .hero-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Intro placeholder section */
+.intro-panel { margin-top: 32px; }
+.intro-body { padding: 8px 4px 4px; color: var(--text-muted); }
+.intro-body .placeholder {
+  margin: 0;
+  padding: 16px 18px;
+  border-left: 3px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0 6px 6px 0;
+  font-size: 14px;
+}
+.intro-body code {
+  background: var(--bg-elev);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 12.5px;
+}
+
+/* Holdings metadata bar — chip-style summary above the table */
+#holdings-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.meta-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: var(--mono);
+}
+.meta-chip .label {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Holdings table */
+.holdings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.holdings-table th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.holdings-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.holdings-table td.rank { color: var(--text-dim); width: 40px; }
+.holdings-table td.ticker code {
+  background: transparent;
+  color: var(--accent);
+  font-size: 14px;
+}
+.holdings-table td.weight { color: var(--text); }
+.holdings-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }

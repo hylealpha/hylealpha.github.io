@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hyle Alpha — Quant Strategy Showcase</title>
+  <title>Hyle Alpha — Quant Strategy</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -14,6 +14,7 @@
         <span class="brand-name">Hyle Alpha</span>
       </a>
       <nav>
+        <a href="backtest.html">Backtest</a>
         <a href="https://github.com/hylealpha" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
@@ -21,21 +22,37 @@
 
   <section class="hero">
     <div class="container">
-      <h1>Quantitative strategy showcase</h1>
-      <p class="lede">Live backtests, weekly holdings, and risk-adjusted performance — published for review.</p>
+      <div class="family-label" id="hero-family">—</div>
+      <h1 id="hero-name">Loading…</h1>
+      <p class="lede" id="hero-tagline"></p>
+      <div class="metric-row hero-metrics" id="hero-metrics"></div>
     </div>
   </section>
 
   <main class="container">
-    <h2 class="section-title">Strategies</h2>
-    <div id="strategy-grid" class="strategy-grid">
-      <div class="loading">Loading strategies…</div>
-    </div>
+    <!-- INTRO — edit this block to expand the introduction later. -->
+    <section class="panel intro-panel">
+      <div class="panel-head"><h2>About</h2></div>
+      <div class="intro-body">
+        <p>Test strategy.</p>
+      </div>
+    </section>
+
+    <!-- CURRENT WEEK HOLDINGS -->
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Current Holdings</h2>
+        <div class="controls" id="holdings-meta"></div>
+      </div>
+      <div id="holdings-body">
+        <div class="loading">Loading current holdings…</div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <span>Generated <span id="generated-at">—</span></span>
+      <span>Last updated <span id="last-updated">—</span></span>
       <span>·</span>
       <span>Not investment advice. Backtests are not predictive of future returns.</span>
     </div>
