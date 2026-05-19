@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-05-19T04:27:49+00:00",
+  "strategies": [
+    {
+      "id": "hyle-alpha-1",
+      "name": "Hyle Alpha I",
+      "family": "US Equity Rotation",
+      "description": "Long-only weekly rotation across US large-cap equities. Multi-signal sleeve construction with cost-aware sizing.\n",
+      "tags": [
+        "us-equity",
+        "long-only",
+        "weekly",
+        "multi-factor"
+      ],
+      "rebalance": "weekly",
+      "last_updated": "2026-05-19_002736"
+    }
+  ]
+}
