@@ -2,15 +2,15 @@
   "id": "hyle-alpha-1",
   "name": "Hyle Alpha I",
   "family": "US Equity Rotation",
-  "description": "Long-only weekly rotation across US large-cap equities. Multi-signal sleeve construction with cost-aware sizing.\n",
+  "description": "Long-only weekly rotation across US large-cap equities. Risk-adjusted multi-horizon momentum signal with cost-aware sizing.\n",
   "tags": [
     "us-equity",
     "long-only",
     "weekly",
-    "multi-factor"
+    "momentum"
   ],
   "rebalance": "weekly",
   "benchmark": "SPY",
-  "last_updated": "2026-05-19_151115",
-  "source_run": "combo_c_2026-05-19_151115"
+  "last_updated": "2026-05-19_165644",
+  "source_run": "combo_c_2026-05-19_165644"
 }
